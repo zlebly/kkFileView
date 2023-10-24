@@ -161,7 +161,6 @@ public class MediaFilePreviewImpl implements FilePreview {
             // 判断一下防止穿透缓存
             if (desFile.exists()) {
                 logger.debug("desFile is exist, return");
-                logger.debug("desFile is exist, return");
                 return convertFileName;
             }
             frameGrabber.start();

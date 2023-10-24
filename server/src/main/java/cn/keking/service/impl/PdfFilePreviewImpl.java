@@ -2,6 +2,7 @@ package cn.keking.service.impl;
 
 import cn.keking.config.ConfigConstants;
 import cn.keking.model.FileAttribute;
+import cn.keking.model.ResponseResult;
 import cn.keking.model.ReturnResponse;
 import cn.keking.service.FilePreview;
 import cn.keking.utils.DownloadUtils;
@@ -45,6 +46,7 @@ public class PdfFilePreviewImpl implements FilePreview {
             //当文件不存在时，就去下载
             if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName) || !ConfigConstants.isCacheEnabled()) {
                 ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
+//                ResponseResult responseResult = DownloadUtils.downloadByResourceId(getResourceId(url), url);
                 if (response.isFailure()) {
                     return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
                 }
@@ -101,5 +103,9 @@ public class PdfFilePreviewImpl implements FilePreview {
             }
         }
         return PDF_FILE_PREVIEW_PAGE;
+    }
+
+    private String getResourceId(String url) {
+        return url.split("resourceId=")[1].split("&filename")[0];
     }
 }

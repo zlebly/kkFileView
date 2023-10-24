@@ -2,12 +2,15 @@ package cn.keking.utils;
 
 import cn.keking.config.ConfigConstants;
 import cn.keking.model.FileAttribute;
+import cn.keking.model.ResponseResult;
 import cn.keking.model.ReturnResponse;
+import com.geor.grs.client.GrsClient;
+import com.geor.grs.client.GrsClientDefault;
 import io.mola.galimatias.GalimatiasParseException;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,8 +18,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.UUID;
 
-import static cn.keking.utils.KkFileUtils.isFtpUrl;
-import static cn.keking.utils.KkFileUtils.isHttpUrl;
+import com.geor.gcf.sfp.SfpException;
 
 /**
  * @author yudian-it
@@ -51,19 +53,13 @@ public class DownloadUtils {
             response.setMsg("下载失败:不支持的类型!" + urlStr);
             return response;
         }
-        assert urlStr != null;
-        if (urlStr.contains("?fileKey=")) {
-            response.setContent(fileDir + fileName);
-            response.setMsg(fileName);
-            return response;
-        }
         if(!StringUtils.hasText(realPath)){
             response.setCode(1);
             response.setContent(null);
             response.setMsg("下载失败:文件名不合法!" + urlStr);
             return response;
         }
-        if(realPath.equals("cunzhai")){
+        if(realPath.equals("cunzai")){
             response.setContent(fileDir + fileName);
             response.setMsg(fileName);
             return response;
@@ -71,23 +67,32 @@ public class DownloadUtils {
         try {
             URL url = WebUtils.normalizedURL(urlStr);
             if (!fileAttribute.getSkipDownLoad()) {
-                if (isHttpUrl(url)) {
-                    File realFile = new File(realPath);
-                    FileUtils.copyURLToFile(url, realFile);
-                } else if (isFtpUrl(url)) {
-                    String ftpUsername = WebUtils.getUrlParameterReg(fileAttribute.getUrl(), URL_PARAM_FTP_USERNAME);
-                    String ftpPassword = WebUtils.getUrlParameterReg(fileAttribute.getUrl(), URL_PARAM_FTP_PASSWORD);
-                    String ftpControlEncoding = WebUtils.getUrlParameterReg(fileAttribute.getUrl(), URL_PARAM_FTP_CONTROL_ENCODING);
-                    FtpUtils.download(fileAttribute.getUrl(), realPath, ftpUsername, ftpPassword, ftpControlEncoding);
-                } else {
-                    response.setCode(1);
-                    response.setMsg("url不能识别url" + urlStr);
-                }
+//                if (isHttpUrl(url)) {
+//                    File realFile = new File(realPath);
+//                    FileUtils.copyURLToFile(url, realFile);
+//                } else if (isFtpUrl(url)) {
+//                    String ftpUsername = WebUtils.getUrlParameterReg(fileAttribute.getUrl(), URL_PARAM_FTP_USERNAME);
+//                    String ftpPassword = WebUtils.getUrlParameterReg(fileAttribute.getUrl(), URL_PARAM_FTP_PASSWORD);
+//                    String ftpControlEncoding = WebUtils.getUrlParameterReg(fileAttribute.getUrl(), URL_PARAM_FTP_CONTROL_ENCODING);
+//                    FtpUtils.download(fileAttribute.getUrl(), realPath, ftpUsername, ftpPassword, ftpControlEncoding);
+//                } else {
+//                    response.setCode(1);
+//                    response.setMsg("url不能识别url" + urlStr);
+//                }
+                String resourceId = getResourceId(url.toString());
+//                long start = System.currentTimeMillis();
+                GrsClient client = new GrsClientDefault();
+//                client.setHost(url.getHost(), url.getPort(),5000);
+                client.setHost(url.getHost(), 9001,5000);
+                client.getFile(resourceId, realPath);
+//                long end = System.currentTimeMillis();
+//                String socketDown = end - start + " ms";
+//                logger.info("socketDown:{}", socketDown);
             }
             response.setContent(realPath);
             response.setMsg(fileName);
             return response;
-        } catch (IOException | GalimatiasParseException e) {
+        } catch (IOException | GalimatiasParseException | SfpException e) {
             logger.error("文件下载失败，url：{}", urlStr);
             response.setCode(1);
             response.setContent(null);
@@ -128,9 +133,33 @@ public class DownloadUtils {
         File realFile = new File(realPath);
         if (realFile.exists()) {
             fileAttribute.setSkipDownLoad(true);
-            return "cunzhai";
+            return "cunzai";
         }
         return realPath;
     }
 
+    /**
+     * 通过socket下载grs中的文件
+     * @param grsii url
+     * @return ResponseResult
+     */
+    public static ResponseResult downloadByResourceId(@RequestParam(name = "grsii", required = false) String grsii) {
+        try {
+            String resourceId = getResourceId(grsii);
+            long start=System.currentTimeMillis();
+            GrsClient client = new GrsClientDefault();
+            client.setHost(grsii.split(":")[0], Integer.valueOf(grsii.split(":")[1]),5000);
+            String outputDir = "./" + resourceId + ".mp4";
+            client.getFile(resourceId,"./" + resourceId + ".mp4");
+            long end = System.currentTimeMillis();
+            String socketDown = end - start + " ms";
+            return ResponseResult.success(outputDir,"文件下载耗时:" + socketDown);
+        }catch (Exception e){
+            return ResponseResult.failed("文件下载失败 :" + e.getMessage());
+        }
+    }
+
+    private static String getResourceId(String url) {
+        return url.split("resourceId=")[1].split("&filename")[0];
+    }
 }
