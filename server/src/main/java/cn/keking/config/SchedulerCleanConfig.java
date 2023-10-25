@@ -26,8 +26,11 @@ public class SchedulerCleanConfig {
 
     private final String fileDir = ConfigConstants.getFileDir();
 
-    // 默认每晚3点执行一次
-    @Scheduled(cron = "${cache.clean.cron:0 0 3 * * ?}")
+    /**
+     *
+     * 每周凌晨3点执行一次清理缓存和文件
+     */
+    @Scheduled(cron = "${cache.clean.cron:0 0 3 ? * SUN}")
     public void clean() {
         logger.info("Cache clean start");
         cacheService.cleanCache();

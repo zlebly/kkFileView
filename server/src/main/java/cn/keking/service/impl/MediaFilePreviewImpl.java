@@ -5,22 +5,16 @@ import cn.keking.model.FileAttribute;
 import cn.keking.model.FileType;
 import cn.keking.model.ReturnResponse;
 import cn.keking.service.FilePreview;
-import cn.keking.utils.ConfigUtils;
 import cn.keking.utils.ConvertMediaUtils;
 import cn.keking.utils.DownloadUtils;
 import cn.keking.service.FileHandlerService;
 import cn.keking.web.filter.BaseUrlFilter;
-import org.bytedeco.ffmpeg.global.avcodec;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.FFmpegFrameRecorder;
-import org.bytedeco.javacv.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
+
+import static cn.keking.utils.ConvertMediaUtils.convertToMp4;
 
 /**
  * @author : kl
@@ -35,8 +29,6 @@ public class MediaFilePreviewImpl implements FilePreview {
     private final OtherFilePreviewImpl otherFilePreview;
 
     private static final Object LOCK = new Object();
-
-    private static final List<String> VIDEO_LIST = Arrays.asList("mp3", "wav", "mp4", "flv");
 
     public MediaFilePreviewImpl(FileHandlerService fileHandlerService, OtherFilePreviewImpl otherFilePreview) {
         this.fileHandlerService = fileHandlerService;
@@ -58,8 +50,9 @@ public class MediaFilePreviewImpl implements FilePreview {
                 fileAttribute.setUrl(url);
             }
         }
-
-        if (checkNeedConvert(fileAttribute.getSuffix()) || ConvertMediaUtils.checkAvcodec(fileAttribute)) {
+        ConvertMediaUtils.checkAvcodec(fileAttribute);
+        if (checkNeedConvert(fileAttribute.getSuffix()) || ConvertMediaUtils.checkAvcodec(fileAttribute)
+        ) {
             url = convertUrl(fileAttribute);
         } else {
             //正常media类型
@@ -119,73 +112,5 @@ public class MediaFilePreviewImpl implements FilePreview {
             }
         }
         return false;
-    }
-
-    /**
-     * 将浏览器不兼容视频格式转换成MP4
-     *
-     * @param fileAttribute 文件属性
-     * @return videoUrl
-     */
-    private static String convertToMp4(FileAttribute fileAttribute) {
-
-        // 说明：这里做临时处理，取上传文件的目录
-        String homePath = ConfigUtils.getHomePath();
-
-        String filePath = homePath + File.separator + "file" + File.separator + fileAttribute.getName();
-        String convertFileName = null;
-
-        File file = new File(filePath);
-        FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(file);
-        String fileName;
-        Frame capturedFrame;
-        FFmpegFrameRecorder recorder;
-        try {
-            if (VIDEO_LIST.contains(fileAttribute.getSuffix())) {
-                String convert = file.getParentFile() + File.separator
-                        + "SameTypeConvert";
-                File convertFile =  new File(convert);
-                if (!convertFile.exists()) {
-                    convertFile.mkdir();
-                }
-                fileName = convert + File.separator + file.getName().substring(0, file.getName().indexOf(".")) + ".mp4";
-                convertFileName = fileAttribute.getUrl()
-                        .replace(file.getName(),
-                                   "SameTypeConvert" + "/" + file.getName())
-                        .replace(fileAttribute.getSuffix(), "mp4");
-            } else {
-                fileName = file.getAbsolutePath().replace(fileAttribute.getSuffix(), "mp4");
-                convertFileName = fileAttribute.getUrl().replace(fileAttribute.getSuffix(), "mp4");
-            }
-            File desFile = new File(fileName);
-            // 判断一下防止穿透缓存
-            if (desFile.exists()) {
-                logger.debug("desFile is exist, return");
-                return convertFileName;
-            }
-            frameGrabber.start();
-            recorder = new FFmpegFrameRecorder(fileName, frameGrabber.getImageWidth(), frameGrabber.getImageHeight(), frameGrabber.getAudioChannels());
-            recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
-            recorder.setFormat("mp4");
-            recorder.setFrameRate(frameGrabber.getFrameRate());
-            recorder.setSampleRate(frameGrabber.getSampleRate());
-
-            recorder.setAudioChannels(frameGrabber.getAudioChannels());
-            recorder.setFrameRate(frameGrabber.getFrameRate());
-            recorder.start();
-            while ((capturedFrame = frameGrabber.grabFrame()) != null) {
-                try {
-                    recorder.setTimestamp(frameGrabber.getTimestamp());
-                    recorder.record(capturedFrame);
-                } catch (Exception e) {
-                }
-            }
-            recorder.stop();
-            recorder.release();
-            frameGrabber.stop();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return convertFileName;
     }
 }
