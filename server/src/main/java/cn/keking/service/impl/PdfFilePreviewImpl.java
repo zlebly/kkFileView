@@ -38,15 +38,15 @@ public class PdfFilePreviewImpl implements FilePreview {
     public String filePreviewHandle(String url, Model model, FileAttribute fileAttribute) {
         String fileName = fileAttribute.getName();
         String officePreviewType = fileAttribute.getOfficePreviewType();
-        String baseUrl = BaseUrlFilter.getBaseUrl();
-        boolean forceUpdatedCache=fileAttribute.forceUpdatedCache();
+        boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
         String pdfName = fileName.substring(0, fileName.lastIndexOf(".") + 1) + "pdf";
         String outFilePath = FILE_DIR + pdfName;
-        if (OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_IMAGE.equals(officePreviewType) || OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_ALL_IMAGES.equals(officePreviewType)) {
+        if (OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_PDF.equals(officePreviewType)) {
+            model.addAttribute("pdfUrl", url);
+        } else if (OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_IMAGE.equals(officePreviewType) || OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_ALL_IMAGES.equals(officePreviewType)) {
             //当文件不存在时，就去下载
             if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName) || !ConfigConstants.isCacheEnabled()) {
                 ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
-//                ResponseResult responseResult = DownloadUtils.downloadByResourceId(getResourceId(url), url);
                 if (response.isFailure()) {
                     return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
                 }

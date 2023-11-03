@@ -50,9 +50,7 @@ public class MediaFilePreviewImpl implements FilePreview {
                 fileAttribute.setUrl(url);
             }
         }
-        ConvertMediaUtils.checkAvcodec(fileAttribute);
-        if (checkNeedConvert(fileAttribute.getSuffix()) || ConvertMediaUtils.checkAvcodec(fileAttribute)
-        ) {
+        if (checkNeedConvert(fileAttribute.getSuffix()) || ConvertMediaUtils.checkAvcodec(fileAttribute)) {
             url = convertUrl(fileAttribute);
         } else {
             //正常media类型

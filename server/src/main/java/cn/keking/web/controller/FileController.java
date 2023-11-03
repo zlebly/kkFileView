@@ -33,7 +33,7 @@ public class FileController {
     private final Logger logger = LoggerFactory.getLogger(FileController.class);
 
     private final String fileDir = ConfigConstants.getFileDir();
-    private final String demoDir = "demo";
+//    private final String demoDir = "demo";
     private final String demoPath = "";
     public static final String BASE64_DECODE_ERROR_MSG = "Base64解码失败，请检查你的 %s 是否采用 Base64 + urlEncode 双重编码了！";
 
@@ -90,11 +90,9 @@ public class FileController {
             Arrays.sort(files, (f1, f2) -> Long.compare(f2.lastModified(), f1.lastModified()));
             Arrays.stream(files).forEach(file1 -> {
                 Map<String, String> fileName = new HashMap<>();
-                if (!file1.getName().equals(SAME_TYPE_CONVERT)) {
-                    if (!file1.getName().equals(SAME_TYPE_CONVERT)) {
-                        fileName.put("fileName", demoDir + "/" + file1.getName());
-                        list.add(fileName);
-                    }
+                if (!file1.getName().equals(SAME_TYPE_CONVERT) && !file1.isDirectory()) {
+                    fileName.put("fileName", file1.getName());
+                    list.add(fileName);
                 }
             });
         }

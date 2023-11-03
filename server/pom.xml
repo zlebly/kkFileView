@@ -190,11 +190,6 @@
             <artifactId>jbig2-imageio</artifactId>
             <version>${jbig2-imageio.version}</version>
         </dependency>
-         <dependency>
-            <groupId>com.aspose</groupId>
-            <artifactId>aspose-cad</artifactId>
-            <version>${aspose-cad.version}</version>
-        </dependency>
         <!-- 密钥算法 -->
         <dependency>
             <groupId>org.bouncycastle</groupId>

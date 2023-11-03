@@ -9,12 +9,6 @@ import cn.keking.utils.EncodingDetects;
 import cn.keking.utils.KkFileUtils;
 import cn.keking.utils.WebUtils;
 import cn.keking.web.filter.BaseUrlFilter;
-import com.aspose.cad.CodePages;
-import com.aspose.cad.Color;
-import com.aspose.cad.Image;
-import com.aspose.cad.LoadOptions;
-import com.aspose.cad.imageoptions.CadRasterizationOptions;
-import com.aspose.cad.imageoptions.PdfOptions;
 import com.itextpdf.text.pdf.PdfReader;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -291,44 +285,6 @@ public class FileHandlerService {
     }
 
     /**
-     * cad文件转pdf
-     *
-     * @param inputFilePath  cad文件路径
-     * @param outputFilePath pdf输出文件路径
-     * @return 转换是否成功
-     */
-    public String cadToPdf(String inputFilePath, String outputFilePath)  throws Exception  {
-        File outputFile = new File(outputFilePath);
-        LoadOptions opts = new LoadOptions();
-        opts.setSpecifiedEncoding(CodePages.SimpChinese);
-        com.aspose.cad.Image cadImage = Image.load(inputFilePath, opts);
-        CadRasterizationOptions cadRasterizationOptions = new CadRasterizationOptions();
-        cadRasterizationOptions.setBackgroundColor(Color.getWhite());
-        cadRasterizationOptions.setPageWidth(1400);
-        cadRasterizationOptions.setPageHeight(650);
-        cadRasterizationOptions.setAutomaticLayoutsScaling(true);
-        cadRasterizationOptions.setNoScaling(false);
-        cadRasterizationOptions.setDrawType(1);
-        PdfOptions pdfOptions = new PdfOptions();
-        pdfOptions.setVectorRasterizationOptions(cadRasterizationOptions);
-        OutputStream stream = null;
-        try {
-            stream = new FileOutputStream(outputFile);
-            cadImage.save(stream, pdfOptions);
-        } catch (IOException e) {
-            logger.error("PDFFileNotFoundException，inputFilePath：{}", inputFilePath, e);
-            return "null";
-        } finally {
-            if (stream != null) {   //关闭
-                stream.close();
-            }
-            if (cadImage != null) {   //关闭
-                cadImage.close();
-            }
-        }
-        return "true";
-    }
-    /**
      *
      * @param str 原字符串（待截取原串）
      * @param posStr 指定字符串
@@ -379,6 +335,9 @@ public class FileHandlerService {
             String fileKey = WebUtils.getUrlParameterReg(url, "fileKey");
             if (StringUtils.hasText(officePreviewType)) {
                 attribute.setOfficePreviewType(officePreviewType);
+            }
+            if (!StringUtils.hasText(officePreviewType) && "pdf".equalsIgnoreCase(suffix)) {
+                attribute.setOfficePreviewType("pdf");
             }
             if (StringUtils.hasText(fileKey)) {
                 attribute.setFileKey(fileKey);
