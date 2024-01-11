@@ -103,6 +103,7 @@ public class MinioUtil {
      * @return
      */
     public boolean upload(String bucketName, String fileName, MultipartFile file) {
+        log.info("bucketName: {}, upload fileName: {}", bucketName, fileName);
         try {
             PutObjectArgs objectArgs = PutObjectArgs.builder()
                     .bucket(bucketName)
@@ -112,8 +113,9 @@ public class MinioUtil {
                     .build();
             //文件名称相同会覆盖
             minioClient.putObject(objectArgs);
+            log.info("upload success");
         } catch (Exception e) {
-            log.error("upload  ", e);
+            log.error("upload failed  ", e);
             return false;
         }
         return true;

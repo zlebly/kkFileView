@@ -8,6 +8,10 @@
     <artifactId>kkFileView-parent</artifactId>
     <version>4.3.0-SNAPSHOT</version>
 
+    <modules>
+        <module>server</module>
+        <module>esb-gateway</module>
+    </modules>
     <properties>
         <java.version>1.8</java.version>
 
@@ -48,9 +52,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
-    <modules>
-        <module>server</module>
-    </modules>
+
 
     <name>kkFileView-parent</name>
     <description>专注文件在线预览服务</description>

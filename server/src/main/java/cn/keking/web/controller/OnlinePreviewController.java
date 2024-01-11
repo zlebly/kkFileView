@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -51,6 +52,7 @@ public class OnlinePreviewController {
         this.otherFilePreview = otherFilePreview;
     }
 
+    @CrossOrigin
     @GetMapping( "/onlinePreview")
     public String onlinePreview(String url, Model model, HttpServletRequest req) {
         String fileUrl;
@@ -67,6 +69,7 @@ public class OnlinePreviewController {
         return filePreview.filePreviewHandle(fileUrl, model, fileAttribute);
     }
 
+    @CrossOrigin
     @GetMapping( "/picturesPreview")
     public String picturesPreview(String urls, Model model, HttpServletRequest req) {
         String fileUrls;
@@ -101,6 +104,7 @@ public class OnlinePreviewController {
      * @param urlPath  url
      * @param response response
      */
+    @CrossOrigin
     @GetMapping("/getCorsFile")
     public void getCorsFile(String urlPath, HttpServletResponse response) throws IOException {
         try {

@@ -336,6 +336,9 @@ public class FileHandlerService {
             if (StringUtils.hasText(officePreviewType)) {
                 attribute.setOfficePreviewType(officePreviewType);
             }
+            if (!StringUtils.hasText(officePreviewType) && "xlsx".equalsIgnoreCase(suffix)) {
+                attribute.setOfficePreviewType("html");
+            }
             if (!StringUtils.hasText(officePreviewType) && "pdf".equalsIgnoreCase(suffix)) {
                 attribute.setOfficePreviewType("pdf");
             }
