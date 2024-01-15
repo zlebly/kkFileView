@@ -1,0 +1,25 @@
+server:
+  port:  8070
+spring:
+  cloud:
+    gateway:
+      # 跨域配置
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+      default-filters:
+
+  load-balanced-services:
+    ribbon:
+      # 负载地址
+      listOfServers: http://localhost:8012, http://localhost:8013, http://localhost:8014
+      # 负载均衡策略
+      NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule
+      # 健康检查  com.modules.scistor.config.HealthExamination
+      NFLoadBalancerPingClassName: com.netflix.loadbalancer.PingUrl
+
+
+

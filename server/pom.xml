@@ -326,6 +326,12 @@
             <artifactId>minio</artifactId>
             <version>8.0.0</version>
         </dependency>
+        <!-- nacos客户端 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <version>${nacos.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

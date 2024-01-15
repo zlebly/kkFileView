@@ -50,6 +50,9 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <spring.cloud.version>Hoxton.SR10</spring.cloud.version>
+        <nacos.version>2.2.5.RELEASE</nacos.version>
     </properties>
 
 
