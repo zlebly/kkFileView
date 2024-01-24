@@ -7,18 +7,21 @@ import cn.keking.model.ReturnResponse;
 import com.geor.grs.client.GrsClient;
 import com.geor.grs.client.GrsClientDefault;
 import io.mola.galimatias.GalimatiasParseException;
+import jdk.internal.util.xml.impl.Input;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.UUID;
 
 import com.geor.gcf.sfp.SfpException;
+
+import static cn.keking.utils.KkFileUtils.isFtpUrl;
+import static cn.keking.utils.KkFileUtils.isHttpUrl;
 
 /**
  * @author yudian-it
@@ -105,6 +108,71 @@ public class DownloadUtils {
         }
     }
 
+//    /**
+//     * @param fileAttribute fileAttribute
+//     * @param fileName      文件名
+//     * @return 本地文件绝对路径
+//     */
+//    public static ReturnResponse<String> downLoadInputStream(FileAttribute fileAttribute, String fileName) {
+//        // 忽略ssl证书
+//        String urlStr = null;
+//        try {
+//            SslUtils.ignoreSsl();
+//            urlStr = fileAttribute.getUrl().replaceAll("\\+", "%20");
+//        } catch (Exception e) {
+//            logger.error("忽略SSL证书异常:", e);
+//        }
+//        ReturnResponse<String> response = new ReturnResponse<>(0, "下载成功!!!", "");
+//        String realPath = getRelFilePath(fileName, fileAttribute);
+//        if (!KkFileUtils.isAllowedUpload(realPath)) {
+//            response.setCode(1);
+//            response.setContent(null);
+//            response.setMsg("下载失败:不支持的类型!" + urlStr);
+//            return response;
+//        }
+//        if(!StringUtils.hasText(realPath)){
+//            response.setCode(1);
+//            response.setContent(null);
+//            response.setMsg("下载失败:文件名不合法!" + urlStr);
+//            return response;
+//        }
+//        if(realPath.equals("cunzai")){
+//            response.setContent(fileDir + fileName);
+//            response.setMsg(fileName);
+//            return response;
+//        }
+//        try {
+//            URL url = WebUtils.normalizedURL(urlStr);
+//            if (!fileAttribute.getSkipDownLoad()) {
+//                if (isHttpUrl(url)) {
+////                    File realFile = new File(realPath);
+////                    FileUtils.copyURLToFile(url, realFile);
+//                    File realFile = new File(realPath);
+//                    realFile = new File(url.openStream());
+//                } else {
+//                    response.setCode(1);
+//                    response.setMsg("url不能识别url" + urlStr);
+//                }
+////                String resourceId = getResourceId(url.toString());
+////                GrsClient client = new GrsClientDefault();
+////                client.setHost(url.getHost(), 9001,5000);
+////                client.getFile(resourceId, realPath);
+//            }
+//            response.setContent(inputStream);
+//            response.setMsg(fileName);
+//            return response;
+//        } catch (IOException | GalimatiasParseException e) {
+//            logger.error("文件下载失败，url：{}", urlStr);
+//            response.setCode(1);
+//            response.setContent(null);
+//            if (e instanceof FileNotFoundException) {
+//                response.setMsg("文件不存在!!!");
+//            } else {
+//                response.setMsg(e.getMessage());
+//            }
+//            return response;
+//        }
+//    }
 
     /**
      * 获取真实文件绝对路径

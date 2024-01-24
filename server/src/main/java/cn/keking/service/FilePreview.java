@@ -3,6 +3,8 @@ package cn.keking.service;
 import cn.keking.model.FileAttribute;
 import org.springframework.ui.Model;
 
+import java.io.FileNotFoundException;
+
 /**
  * Created by kl on 2018/1/17.
  * Content :

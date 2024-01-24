@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 import static cn.keking.utils.ConvertMediaUtils.convertToMp4;
 
 /**
@@ -43,6 +46,7 @@ public class MediaFilePreviewImpl implements FilePreview {
                         fileAttribute.getName().lastIndexOf('.') + 1) + fileAttribute.getSuffix());
         if (url != null && url.toLowerCase().startsWith("http")) {
             ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileAttribute.getName());
+//            ReturnResponse<String> response = DownloadUtils.downLoadInputStream(fileAttribute, fileAttribute.getName());
             if (response.isFailure()) {
                 return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
             } else {
