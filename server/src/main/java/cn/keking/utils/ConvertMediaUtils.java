@@ -157,8 +157,10 @@ public class ConvertMediaUtils {
         if (!new File(FFMPEG_PATH).exists()) {
             logger.error(FFMPEG_PATH + " is not exists");
         }
-        ProcessBuilder pb = new ProcessBuilder(FFMPEG_PATH, "-y", "-i", inputDir.getAbsolutePath(),
-                "-vcodec", "h264", outputDir.getAbsolutePath());
+//        ProcessBuilder pb = new ProcessBuilder(FFMPEG_PATH, "-y", "-i", inputDir.getAbsolutePath(),
+//                "-vcodec", "h264", outputDir.getAbsolutePath());
+        ProcessBuilder pb = new ProcessBuilder(FFMPEG_PATH, "-hwaccel", "cuvid", "-hwaccel_output_format",
+                "cuda", "-i", inputDir.getAbsolutePath(), "-c:v", "h264_nvenc", outputDir.getAbsolutePath());
         try {
             pb.inheritIO().start().waitFor();
         } catch (IOException | InterruptedException e) {
