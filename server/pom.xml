@@ -320,12 +320,6 @@
             <scope>system</scope>
             <systemPath>${pom.basedir}/lib/gtp-1.0.2a.jar</systemPath>
         </dependency>
-        <!-- 对象存储 -->
-        <dependency>
-            <groupId>io.minio</groupId>
-            <artifactId>minio</artifactId>
-            <version>8.0.0</version>
-        </dependency>
     </dependencies>
 
     <build>

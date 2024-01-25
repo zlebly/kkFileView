@@ -37,6 +37,7 @@ public class ConfigUtils {
     }
 
     // 获取环境变量，如果找不到则返回默认值
+    @SuppressWarnings("SameParameterValue")
     private static String getEnvOrDefault(String key, String def) {
         String value = System.getenv(key);
         return value == null ? def : value;
